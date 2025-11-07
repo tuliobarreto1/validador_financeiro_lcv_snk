@@ -1,0 +1,190 @@
+═══════════════════════════════════════════════════════════════════
+  ESTRUTURA DO PROJETO - Validador Financeiro LCV-SNK
+═══════════════════════════════════════════════════════════════════
+
+Validador Financeiro LCV-SNK/
+│
+├── backend/                              # Servidor Node.js + Express
+│   ├── src/
+│   │   ├── config/
+│   │   │   └── database.js              # Conexões com bancos de dados
+│   │   │                                  - Configuração MySQL (Sankhya)
+│   │   │                                  - Configuração SQL Server (Locavia)
+│   │   │
+│   │   ├── services/
+│   │   │   ├── locaviaService.js        # Queries do Locavia (SQL Server)
+│   │   │   │                              - getMultasPagamento()
+│   │   │   │                              - getMultasRecebimento()
+│   │   │   │
+│   │   │   ├── sankhyaService.js        # Queries do Sankhya (MySQL)
+│   │   │   │                              - getMultasPagamentoSankhya()
+│   │   │   │                              - getMultasRecebimentoSankhya()
+│   │   │   │
+│   │   │   └── validationService.js     # Lógica de comparação
+│   │   │                                  - compareMultasPagamento()
+│   │   │                                  - compareMultasRecebimento()
+│   │   │                                  - filterByDateRange()
+│   │   │
+│   │   ├── routes/
+│   │   │   └── validation.js            # Rotas da API
+│   │   │                                  - POST /api/validation/pagamento
+│   │   │                                  - POST /api/validation/recebimento
+│   │   │                                  - GET /api/validation/test-connections
+│   │   │
+│   │   └── server.js                    # Servidor Express principal
+│   │                                      - Configuração CORS
+│   │                                      - Middlewares
+│   │                                      - Porta 3001
+│   │
+│   ├── package.json                     # Dependências do backend
+│   ├── .env                             # Credenciais dos bancos
+│   ├── .env.example                     # Exemplo de credenciais
+│   └── .gitignore                       # Arquivos ignorados pelo Git
+│
+├── frontend/                            # Aplicação React
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Dashboard.jsx           # Cards com estatísticas
+│   │   │   │                             - Total de registros
+│   │   │   │                             - Registros conformes
+│   │   │   │                             - Divergências
+│   │   │   │                             - Não encontrados
+│   │   │   │
+│   │   │   ├── FilterPanel.jsx         # Painel de filtros
+│   │   │   │                             - Tipo de validação
+│   │   │   │                             - Ano
+│   │   │   │                             - Data inicial/final
+│   │   │   │                             - Botão validar
+│   │   │   │
+│   │   │   ├── ComparisonTable.jsx     # Tabela de divergências
+│   │   │   │                             - Lista paginada
+│   │   │   │                             - 20 itens por página
+│   │   │   │                             - Click para detalhes
+│   │   │   │
+│   │   │   └── DivergenceDetails.jsx   # Modal de detalhes
+│   │   │                                 - Dados Locavia
+│   │   │                                 - Dados Sankhya
+│   │   │                                 - Campos divergentes
+│   │   │
+│   │   ├── services/
+│   │   │   └── api.js                  # Cliente HTTP (Axios)
+│   │   │                                 - validationService.testConnections()
+│   │   │                                 - validationService.validatePagamento()
+│   │   │                                 - validationService.validateRecebimento()
+│   │   │
+│   │   ├── App.jsx                     # Componente principal
+│   │   ├── App.css                     # Estilos globais
+│   │   └── main.jsx                    # Ponto de entrada React
+│   │
+│   ├── public/                         # Arquivos públicos
+│   ├── index.html                      # HTML base
+│   ├── package.json                    # Dependências do frontend
+│   ├── vite.config.js                  # Configuração do Vite (Porta 3003)
+│   └── .gitignore                      # Arquivos ignorados pelo Git
+│
+├── README.md                           # Documentação completa
+├── INSTALACAO.md                       # Guia de instalação
+├── DEPENDENCIAS.txt                    # Lista de dependências
+└── ESTRUTURA_PROJETO.txt              # Este arquivo
+
+═══════════════════════════════════════════════════════════════════
+  FLUXO DE DADOS
+═══════════════════════════════════════════════════════════════════
+
+1. USUÁRIO
+   │
+   ├─> Seleciona filtros (ano, datas, tipo)
+   └─> Clica em "Validar"
+       │
+       ↓
+2. FRONTEND (React)
+   │
+   ├─> FilterPanel.jsx captura os filtros
+   ├─> api.js faz requisição HTTP
+   └─> POST /api/validation/pagamento ou /recebimento
+       │
+       ↓
+3. BACKEND (Express)
+   │
+   ├─> validation.js recebe a requisição
+   │
+   ├─> locaviaService.js busca dados do Locavia (SQL Server)
+   ├─> sankhyaService.js busca dados do Sankhya (MySQL)
+   │
+   ├─> validationService.js compara os dados
+   │   ├─> Normaliza valores e datas
+   │   ├─> Cria índice para busca rápida
+   │   ├─> Identifica divergências
+   │   └─> Gera relatório
+   │
+   └─> Retorna JSON com resultados
+       │
+       ↓
+4. FRONTEND (React)
+   │
+   ├─> Dashboard.jsx mostra estatísticas
+   ├─> ComparisonTable.jsx lista divergências
+   └─> DivergenceDetails.jsx mostra detalhes
+       │
+       ↓
+5. USUÁRIO visualiza os resultados
+
+═══════════════════════════════════════════════════════════════════
+  DE-PARA DE CAMPOS
+═══════════════════════════════════════════════════════════════════
+
+MULTAS DE PAGAMENTO:
+  Locavia                    Sankhya
+  ------------------         ------------------
+  NumeroAIT_Numeros    →     NUMNOTA
+  CNPJCPF_1           →     AD_IDEXTERNO
+  Data                →     DTNEG
+  ValorCobradoMulta   →     VLRTOT
+
+
+MULTAS DE RECEBIMENTO:
+  Locavia                    Sankhya
+  ------------------         ------------------
+  NumeroAIT_Numeros    →     NUMNOTA
+  CNPJCPF             →     AD_IDEXTERNO
+  Data                →     DTNEG
+  Valor               →     VLRTOT
+
+═══════════════════════════════════════════════════════════════════
+  TECNOLOGIAS UTILIZADAS
+═══════════════════════════════════════════════════════════════════
+
+Backend:
+  ✓ Node.js 16+
+  ✓ Express (Framework web)
+  ✓ MySQL2 (Driver MySQL)
+  ✓ Tedious (Driver SQL Server)
+  ✓ CORS (Cross-Origin)
+  ✓ dotenv (Variáveis de ambiente)
+  ✓ date-fns (Manipulação de datas)
+
+Frontend:
+  ✓ React 18
+  ✓ Vite (Build tool)
+  ✓ Axios (Cliente HTTP)
+  ✓ CSS Variables (Estilização)
+  ✓ date-fns (Manipulação de datas)
+
+Bancos de Dados:
+  ✓ SQL Server (Locavia)
+  ✓ MySQL (Sankhya)
+
+═══════════════════════════════════════════════════════════════════
+  PORTAS E URLS
+═══════════════════════════════════════════════════════════════════
+
+Backend:   http://localhost:3001
+Frontend:  http://localhost:3003
+
+Endpoints:
+  GET  /health
+  GET  /api/validation/test-connections
+  POST /api/validation/pagamento
+  POST /api/validation/recebimento
+
+═══════════════════════════════════════════════════════════════════

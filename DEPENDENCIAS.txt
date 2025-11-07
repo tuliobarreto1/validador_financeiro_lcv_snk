@@ -1,0 +1,85 @@
+═══════════════════════════════════════════════════════════════════
+  DEPENDÊNCIAS DO PROJETO - Validador Financeiro LCV-SNK
+═══════════════════════════════════════════════════════════════════
+
+BACKEND
+-------
+
+Dependências de Produção:
+- express@^4.18.2          (Framework web)
+- cors@^2.8.5              (CORS middleware)
+- dotenv@^16.3.1           (Variáveis de ambiente)
+- mysql2@^3.6.5            (Driver MySQL para Sankhya)
+- tedious@^16.6.1          (Driver SQL Server para Locavia)
+- date-fns@^3.0.6          (Manipulação de datas)
+
+Dependências de Desenvolvimento:
+- nodemon@^3.0.2           (Auto-reload em desenvolvimento)
+
+Comandos para instalar:
+cd backend
+npm install
+
+
+FRONTEND
+--------
+
+Dependências de Produção:
+- react@^18.2.0            (Biblioteca UI)
+- react-dom@^18.2.0        (React DOM)
+- axios@^1.6.2             (Cliente HTTP)
+- date-fns@^3.0.6          (Manipulação de datas)
+
+Dependências de Desenvolvimento:
+- @types/react@^18.2.43              (TypeScript types para React)
+- @types/react-dom@^18.2.17          (TypeScript types para React DOM)
+- @vitejs/plugin-react@^4.2.1        (Plugin Vite para React)
+- vite@^5.0.8                        (Bundler e dev server)
+
+Comandos para instalar:
+cd frontend
+npm install
+
+
+TOTAL DE DEPENDÊNCIAS
+---------------------
+Backend: 7 dependências (6 produção + 1 dev)
+Frontend: 8 dependências (4 produção + 4 dev)
+Total: 15 pacotes npm
+
+
+INSTALAÇÃO COMPLETA
+-------------------
+
+Para instalar todas as dependências de uma vez, execute:
+
+# Windows (PowerShell)
+cd backend; npm install; cd ..; cd frontend; npm install; cd ..
+
+# Linux/Mac (Bash)
+cd backend && npm install && cd ../frontend && npm install && cd ..
+
+
+TAMANHO APROXIMADO
+------------------
+node_modules do Backend: ~150 MB
+node_modules do Frontend: ~300 MB
+Total: ~450 MB
+
+
+REQUISITOS DO SISTEMA
+---------------------
+- Node.js 16.x ou superior
+- npm 8.x ou superior
+- 500 MB de espaço em disco
+- Conexão com internet (para primeira instalação)
+- Acesso aos bancos de dados Locavia (SQL Server) e Sankhya (MySQL)
+
+
+PORTAS UTILIZADAS
+-----------------
+- Backend: 3001 (configurável via .env)
+- Frontend: 3003 (configurável via vite.config.js)
+
+
+═══════════════════════════════════════════════════════════════════
